@@ -14,7 +14,7 @@ namespace GFX {
 		}
 		void bind(GLenum target)
 		{
-			glCall(glBindBuffer(target, vboID));
+			glCall(glBindBuffer(target, this->vboID));
 		}
 		~VBO() {
 

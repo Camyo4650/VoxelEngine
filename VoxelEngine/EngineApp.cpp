@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 #include <iostream>
 
@@ -29,6 +30,13 @@ namespace Engine
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
 			std::cout << "Failed to initialize SDL video subsystem.\n";
+			exit(1);
+		}
+
+		// Initialize SDL_image
+		if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
+			std::cerr << "IMG_Init Error: " << IMG_GetError() << std::endl;
+			SDL_Quit();
 			exit(1);
 		}
 

@@ -9,6 +9,7 @@ namespace GFX {
 	struct ChunkVertex
 	{
 		int position[3]; // relative to current chunk position
+		int coords[3];
 		int texCoords[2];
 		int blockId;
 		int faceNum; 

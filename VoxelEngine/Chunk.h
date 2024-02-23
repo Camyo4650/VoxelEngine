@@ -18,7 +18,7 @@ namespace Game {
 	{
 		const int32_t X, Y; // 2^32 * C_sizeX blocks wide
 							// 2^32 * C_sizeY blocks long
-		const int8_t Z;		// 2^8  * C_sizeZ blocks tall
+		const uint8_t Z;	// 2^8  * C_sizeZ blocks tall
 	};
 
 	class Chunk 
@@ -41,7 +41,8 @@ namespace Game {
 		//  7  6  5  4  3  2  1  0
 		//  _  _ -x +x -y +y -z +z
 		uint8_t getExposedFaces(int x, int y, int z);
-		void generate(); // someday... algorithm ;)
+		void generateTerrain(uint8_t height[C_sizeX][C_sizeY]); // someday... algorithm ;)
+		void generateVertices();
 		void modify(uint16_t blockId, int x, int y, int z);
 		void draw(const glm::mat4& view, const glm::mat4& projection);
 		~Chunk();

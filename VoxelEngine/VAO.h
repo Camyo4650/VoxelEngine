@@ -10,11 +10,11 @@ namespace GFX {
 		unsigned int vaoID;
 	public:
 		VAO() {
-			glCall(glGenVertexArrays(1, &vaoID));
+			glCall(glGenVertexArrays(1, &this->vaoID));
 		}
 		void bind()
 		{
-			glCall(glBindVertexArray(vaoID));
+			glCall(glBindVertexArray(this->vaoID));
 		}
 	};
 }

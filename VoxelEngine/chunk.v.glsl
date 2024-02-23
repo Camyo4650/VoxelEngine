@@ -1,11 +1,12 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
-layout (location = 2) in int aBlockID;
-layout (location = 3) in float aFace;
+layout (location = 1) in ivec3 aCoords;
+layout (location = 2) in vec2 aTexCoord;
+layout (location = 3) in float aBlockID;
+layout (location = 4) in float aFace;
 
 out vec2 TexCoord;
-flat out int BlockID;
+out float BlockID;
 out float Face;
 out float yiay;
 

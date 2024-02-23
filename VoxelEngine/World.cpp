@@ -1,22 +1,21 @@
 #include "World.h"
 #include <array>
+#include <string>
 #include "VBO.h"
 
 int getChunkId(int x, int y, int z) {
-	return x + (CHUNK_RENDER_DISTANCE + 1) * (y + (CHUNK_RENDER_DISTANCE + 1) * z);
+	size_t hx = std::hash<int>{}(x);
+	size_t hy = std::hash<int>{}(y);
+	size_t hz = std::hash<int>{}(z);
+	return hx ^ (hy << 1) ^ (hz << 2);
 };
 
 Game::World::World(Player* localPlayer) :
 	localPlayer(localPlayer),
-	texture("resources/texturepack-simple.jpg"),
+	texture("resources/texturepack-simple.png"),
 	chunkVBO()
 {
-	for (int x = 0; x < 2; x++)
-	{
-		int t = getChunkId(x, 0, 0);
-		ChunkPos pos = { x, 0, 0 };
-		renderedChunks[t] = new Chunk(texture, pos, &chunkVBO);
-	}
+	this->load();
 	for (auto& chunk : renderedChunks)
 	{
 		Chunk* c = chunk.second;
@@ -40,10 +39,7 @@ Game::World::World(Player* localPlayer) :
 			c->Cz  = renderedChunks[z];
 		if (renderedChunks.contains(z1))
 			c->Cz1 = renderedChunks[z1];
-	}
-	for (auto& chunk : renderedChunks)
-	{
-		chunk.second->generate();
+		c->generateVertices();
 	}
 }
 
@@ -66,5 +62,16 @@ void Game::World::load()
 	// start with knowing player position.
 	// see all chunks that need to be created within the sphere of the player
 		// make sure these chunks are within the confines of the world (int32 x, y. int8 z)
+
+	for (int x = -5; x < 5; x++)
+	{
+		for (int y = -5; y < 5; y++)
+		{
+			int t = getChunkId(x, y, 0);
+			ChunkPos pos = { x, y, 0 };
+			renderedChunks[t] = new Chunk(texture, pos, &chunkVBO);
+			renderedChunks[t]->generateTerrain(NULL);
+		}
+	}
 }
 

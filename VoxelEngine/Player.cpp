@@ -85,19 +85,19 @@ void Game::Player::update(double delta)
 {
 	if (move[0])
 	{
-		pos += 0.01f * camera.forward;
+		pos += 0.05f * (float)delta * camera.forward;
 	}
 	if (move[1])
 	{
-		pos -= 0.01f * camera.forward;
+		pos -= 0.05f * (float)delta * camera.forward;
 	}
 	if (move[2])
 	{
-		pos -= 0.01f * camera.right;
+		pos -= 0.05f * (float)delta * camera.right;
 	}
 	if (move[3])
 	{
-		pos += 0.01f * camera.right;
+		pos += 0.05f * (float)delta * camera.right;
 	}
 	camera.view = glm::lookAt(pos, pos + camera.forward, camera.up);
 }
