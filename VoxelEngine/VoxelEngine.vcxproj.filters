@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{84074e3e-e9df-4f17-9afb-4c0170cf9c54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{6b021b49-054d-4bae-b445-acd47690cb9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine">
+      <UniqueIdentifier>{c9360a81-73e2-4627-bdfc-dda97556a350}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\gfx">
+      <UniqueIdentifier>{c30dc9c0-f4be-4b0b-8864-308ed38752e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\gfx">
+      <UniqueIdentifier>{0c0e3b16-d97b-42f1-8d92-c0be90495620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game">
+      <UniqueIdentifier>{08b376a1-9560-4480-b345-6d0af549e036}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game\gfx">
+      <UniqueIdentifier>{d5adffe5-5d02-4c37-884b-a1c34c05cdbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\gfx">
+      <UniqueIdentifier>{10cefeba-5e0a-46fb-8fa2-e8857a2b1677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{1ec2da15-cd40-4c48-a2bd-747d8c096575}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{eca61b5a-c4d0-4861-ad10-ad159ae92fe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\dep">
+      <UniqueIdentifier>{e0802962-677b-4d59-916a-c1cfc26b2d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dep">
+      <UniqueIdentifier>{8504cdd1-fd66-4c33-8310-24343888cf94}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineApp.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\engine\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Chunk.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\engine\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files\dep</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameEngine.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineConfiguration.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineApp.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\engine\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkVertex.h">
+      <Filter>Header Files\game\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="VAO.h">
+      <Filter>Header Files\engine\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexAttribute.h">
+      <Filter>Header Files\engine\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\engine\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\game\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="GLHelper.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\engine\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files\dep</Filter>
+    </ClInclude>
+    <ClInclude Include="AxisVertex.h">
+      <Filter>Header Files\game\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="VBO.h">
+      <Filter>Header Files\engine\gfx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="chunk.v.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="chunk.f.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="test.v.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="test.f.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="axis.v.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="axis.f.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\texturepack-simple.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
