@@ -5,7 +5,7 @@
 
 #include <vector>
 #include "ChunkVertex.h"
-#include "Texture.h"
+#include "TextureArray.h"
 #include "Mesh.h"
 #include "VBO.h"
 
@@ -25,7 +25,7 @@ namespace Game {
 	{
 		Engine::GFX::Mesh mesh;
 		std::vector<GFX::ChunkVertex> vertices;
-		Engine::GFX::Texture& texture;
+		Engine::GFX::TextureArray& texture;
 		uint16_t blocks[C_sizeX][C_sizeY][C_sizeZ];
 		bool modified;
 		bool redraw;
@@ -36,12 +36,12 @@ namespace Game {
 		Chunk*	Cz; Chunk*	Cz1;
 		int relX, relY, relZ;
 		const ChunkPos chunkPos;
-		Chunk(Engine::GFX::Texture& texture, ChunkPos chunkPos, Engine::GFX::VBO * vbo);
+		Chunk(Engine::GFX::TextureArray& texture, ChunkPos chunkPos, Engine::GFX::VBO * vbo);
 		bool isEmpty(int x, int y, int z);
 		//  7  6  5  4  3  2  1  0
 		//  _  _ -x +x -y +y -z +z
 		uint8_t getExposedFaces(int x, int y, int z);
-		void generateTerrain(uint8_t height[C_sizeX][C_sizeY]); // someday... algorithm ;)
+		void generateTerrain(uint8_t(*)(int x, int y)); // someday... algorithm ;)
 		void generateVertices();
 		void modify(uint16_t blockId, int x, int y, int z);
 		void draw(const glm::mat4& view, const glm::mat4& projection);

@@ -14,7 +14,7 @@ namespace Game {
 		glm::vec3 pos;
 
 		GFX::Camera camera;
-		Player();
+		Player(int w, int h);
 		void input(SDL_Event* e);
 		void update(double delta);
 		void render();

@@ -5,7 +5,7 @@
 
 #include "Player.h"
 #include "Chunk.h"
-#include "Texture.h"
+#include "TextureArray.h"
 #include <map> 
 
 #define CHUNK_RENDER_DISTANCE 8 // radius
@@ -16,7 +16,7 @@ namespace Game
 	{
 		std::vector<Chunk> modifiedChunks;
 		std::map<int, Chunk*> renderedChunks;
-		Engine::GFX::Texture texture;
+		Engine::GFX::TextureArray texture;
 		Player* localPlayer;
 		void load();
 		Engine::GFX::VBO chunkVBO;

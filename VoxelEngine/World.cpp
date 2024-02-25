@@ -12,7 +12,7 @@ int getChunkId(int x, int y, int z) {
 
 Game::World::World(Player* localPlayer) :
 	localPlayer(localPlayer),
-	texture("resources/texturepack-simple.png"),
+	texture("resources/texturepack-simple.jpg"),
 	chunkVBO()
 {
 	this->load();

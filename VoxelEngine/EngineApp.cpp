@@ -6,6 +6,9 @@
 
 #include "../GameEngine.h"
 
+#define SCR_W 1280
+#define SCR_H 720
+
 #define G_DEBUG
 
 SDL_Window* G_GFX_APP_WINDOW = nullptr;
@@ -48,7 +51,7 @@ namespace Engine
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 
-		G_GFX_APP_WINDOW = SDL_CreateWindow("VoxelEngine", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
+		G_GFX_APP_WINDOW = SDL_CreateWindow("VoxelEngine", 100, 100, SCR_W, SCR_H, SDL_WINDOW_OPENGL);
 
 		if (G_GFX_APP_WINDOW == nullptr)
 		{
@@ -77,7 +80,7 @@ namespace Engine
 		glCall(glEnable(GL_DEPTH_TEST));
 		glCall(glEnable(GL_CULL_FACE));
 
-		gameEngine = new GameEngine();
+		gameEngine = new GameEngine(SCR_W, SCR_H);
 	}
 
 	void mainLoop()

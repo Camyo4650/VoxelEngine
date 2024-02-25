@@ -4,14 +4,14 @@
 
 namespace Engine {
 namespace GFX {
-	class Texture
+	class TextureArray
 	{
 		unsigned int id;
 		int width, height, nrChannels;
 	public:
-		Texture(const char* path);
+		TextureArray(const char* path);
 		void use(GLenum texture);
-		~Texture();
+		~TextureArray();
 	};
 }
 }

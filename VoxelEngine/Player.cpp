@@ -6,9 +6,10 @@
 
 int xoffset, yoffset;
 float Yaw, Pitch;
-Game::Player::Player() :
+Game::Player::Player(int w, int h) :
 	chunkPos{ 0,0,0 },
-	pos(10,10,10)
+	pos(10,10,10),
+	camera(w,h)
 {
 	glm::vec3 front;
 	front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
@@ -85,19 +86,19 @@ void Game::Player::update(double delta)
 {
 	if (move[0])
 	{
-		pos += 0.05f * (float)delta * camera.forward;
+		pos += 0.04f * (float)delta * camera.forward;
 	}
 	if (move[1])
 	{
-		pos -= 0.05f * (float)delta * camera.forward;
+		pos -= 0.04f * (float)delta * camera.forward;
 	}
 	if (move[2])
 	{
-		pos -= 0.05f * (float)delta * camera.right;
+		pos -= 0.04f * (float)delta * camera.right;
 	}
 	if (move[3])
 	{
-		pos += 0.05f * (float)delta * camera.right;
+		pos += 0.04f * (float)delta * camera.right;
 	}
 	camera.view = glm::lookAt(pos, pos + camera.forward, camera.up);
 }

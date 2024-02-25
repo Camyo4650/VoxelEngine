@@ -14,14 +14,14 @@ namespace GFX {
 
 		glm::mat4 model, view, proj;
 
-		Camera() {
+		Camera(int w, int h) {
 			up = glm::vec3(0, 0, 1);
 			forward = glm::vec3(0, 1, 0);
 			right = glm::vec3(1, 0, 0);
 
 			model = glm::mat4(1.0f);
 			view = glm::mat4(1.0f);
-			proj = glm::perspective(glm::radians(90.0f), (float)800 / (float)600, 0.1f, 1000.0f);
+			proj = glm::perspective(glm::radians(90.0f), (float)w / (float)h, 0.1f, 1000.0f);
 			view = glm::translate(view, glm::vec3(0.0f, -5.0f, 0.0f));
 		}
 	};

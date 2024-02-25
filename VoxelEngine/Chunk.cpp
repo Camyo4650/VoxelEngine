@@ -12,7 +12,7 @@ std::vector<Engine::GFX::VertexAttribute> ChunkVertexAttribs = {
 	{1, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), (void*)(9 * sizeof(int))}
 };
 
-Game::Chunk::Chunk(Engine::GFX::Texture &texture, ChunkPos chunkPos, Engine::GFX::VBO * vbo) :
+Game::Chunk::Chunk(Engine::GFX::TextureArray &texture, ChunkPos chunkPos, Engine::GFX::VBO * vbo) :
 	mesh(Engine::GFX::Shader("chunk.v.glsl", "chunk.f.glsl"),
 		ChunkVertexAttribs),
 	chunkPos(chunkPos),
@@ -61,7 +61,7 @@ uint8_t Game::Chunk::getExposedFaces(int x, int y, int z)
 	return faces;
 }
 
-void Game::Chunk::generateTerrain(uint8_t height[C_sizeX][C_sizeY])
+void Game::Chunk::generateTerrain(uint8_t(*height)(int x, int y))
 {// nothing complex.. for now ;)
 	uint8_t h[C_sizeX][C_sizeY];
 	if (height == NULL)
@@ -70,7 +70,7 @@ void Game::Chunk::generateTerrain(uint8_t height[C_sizeX][C_sizeY])
 		{
 			for (uint16_t x = 0; x < C_sizeX; x++)
 			{
-				h[x][y] = 3;
+				h[x][y] = rand() % 16;
 			}
 		}
 	}
@@ -106,72 +106,72 @@ void Game::Chunk::generateVertices()
 					if (exposed & 1 << 5) {
 						// -x exposed
 						std::vector<Game::GFX::ChunkVertex> verts = {
-							{ x + 0, y + 1, z + 1, x, y, z, 1, 1, id, 0 },
-							{ x + 0, y + 1, z + 0, x, y, z, 1, 0, id, 0 },
-							{ x + 0, y + 0, z + 0, x, y, z, 0, 0, id, 0 },
-							{ x + 0, y + 0, z + 0, x, y, z, 0, 0, id, 0 },
-							{ x + 0, y + 0, z + 1, x, y, z, 0, 1, id, 0 },
-							{ x + 0, y + 1, z + 1, x, y, z, 1, 1, id, 0 },
+							{ x + 0, y + 1, z + 1, x, y, z, 1, 0, id, 0 },
+							{ x + 0, y + 1, z + 0, x, y, z, 1, 1, id, 0 },
+							{ x + 0, y + 0, z + 0, x, y, z, 0, 1, id, 0 },
+							{ x + 0, y + 0, z + 0, x, y, z, 0, 1, id, 0 },
+							{ x + 0, y + 0, z + 1, x, y, z, 0, 0, id, 0 },
+							{ x + 0, y + 1, z + 1, x, y, z, 1, 0, id, 0 },
 						};
 						this->vertices.insert(vertices.end(), verts.begin(), verts.end());
 					}
 					if (exposed & 1 << 4) {
 						// +x exposed
 						std::vector<Game::GFX::ChunkVertex> verts = {
-							{ x + 1, y + 0, z + 0, x, y, z, 1, 0, id, 1 },
-							{ x + 1, y + 1, z + 0, x, y, z, 0, 0, id, 1 },
-							{ x + 1, y + 1, z + 1, x, y, z, 0, 1, id, 1 },
-							{ x + 1, y + 1, z + 1, x, y, z, 0, 1, id, 1 },
-							{ x + 1, y + 0, z + 1, x, y, z, 1, 1, id, 1 },
-							{ x + 1, y + 0, z + 0, x, y, z, 1, 0, id, 1 },
+							{ x + 1, y + 0, z + 0, x, y, z, 1, 1, id, 1 },
+							{ x + 1, y + 1, z + 0, x, y, z, 0, 1, id, 1 },
+							{ x + 1, y + 1, z + 1, x, y, z, 0, 0, id, 1 },
+							{ x + 1, y + 1, z + 1, x, y, z, 0, 0, id, 1 },
+							{ x + 1, y + 0, z + 1, x, y, z, 1, 0, id, 1 },
+							{ x + 1, y + 0, z + 0, x, y, z, 1, 1, id, 1 },
 						};
 						this->vertices.insert(vertices.end(), verts.begin(), verts.end());
 					}
 					if (exposed & 1 << 3) {
 						// -y exposed
 						std::vector<Game::GFX::ChunkVertex> verts = {
-							{ x + 0, y + 0, z + 0, x, y, z, 0, 0, id, 2 },
-							{ x + 1, y + 0, z + 0, x, y, z, 1, 0, id, 2 },
-							{ x + 1, y + 0, z + 1, x, y, z, 1, 1, id, 2 },
-							{ x + 1, y + 0, z + 1, x, y, z, 1, 1, id, 2 },
-							{ x + 0, y + 0, z + 1, x, y, z, 0, 1, id, 2 },
-							{ x + 0, y + 0, z + 0, x, y, z, 0, 0, id, 2 },
+							{ x + 0, y + 0, z + 0, x, y, z, 0, 1, id, 2 },
+							{ x + 1, y + 0, z + 0, x, y, z, 1, 1, id, 2 },
+							{ x + 1, y + 0, z + 1, x, y, z, 1, 0, id, 2 },
+							{ x + 1, y + 0, z + 1, x, y, z, 1, 0, id, 2 },
+							{ x + 0, y + 0, z + 1, x, y, z, 0, 0, id, 2 },
+							{ x + 0, y + 0, z + 0, x, y, z, 0, 1, id, 2 },
 						};
 						this->vertices.insert(vertices.end(), verts.begin(), verts.end());
 					}
 					if (exposed & 1 << 2) {
 						// +y exposed
 						std::vector<Game::GFX::ChunkVertex> verts = {
-							{ x + 1, y + 1, z + 1, x, y, z, 0, 1, id, 3 },
-							{ x + 1, y + 1, z + 0, x, y, z, 0, 0, id, 3 },
-							{ x + 0, y + 1, z + 0, x, y, z, 1, 0, id, 3 },
-							{ x + 0, y + 1, z + 0, x, y, z, 1, 0, id, 3 },
-							{ x + 0, y + 1, z + 1, x, y, z, 1, 1, id, 3 },
-							{ x + 1, y + 1, z + 1, x, y, z, 0, 1, id, 3 },
+							{ x + 1, y + 1, z + 1, x, y, z, 0, 0, id, 3 },
+							{ x + 1, y + 1, z + 0, x, y, z, 0, 1, id, 3 },
+							{ x + 0, y + 1, z + 0, x, y, z, 1, 1, id, 3 },
+							{ x + 0, y + 1, z + 0, x, y, z, 1, 1, id, 3 },
+							{ x + 0, y + 1, z + 1, x, y, z, 1, 0, id, 3 },
+							{ x + 1, y + 1, z + 1, x, y, z, 0, 0, id, 3 },
 						};
 						this->vertices.insert(vertices.end(), verts.begin(), verts.end());
 					}
 					if (exposed & 1 << 1) {
 						// -z exposed
 						std::vector<Game::GFX::ChunkVertex> verts = {
-							{ x + 1, y + 1, z + 0, x, y, z, 0, 1, id, 4 },
-							{ x + 1, y + 0, z + 0, x, y, z, 0, 0, id, 4 },
-							{ x + 0, y + 0, z + 0, x, y, z, 1, 0, id, 4 },
-							{ x + 0, y + 0, z + 0, x, y, z, 1, 0, id, 4 },
-							{ x + 0, y + 1, z + 0, x, y, z, 1, 1, id, 4 },
-							{ x + 1, y + 1, z + 0, x, y, z, 0, 1, id, 4 },
+							{ x + 1, y + 1, z + 0, x, y, z, 0, 0, id, 4 },
+							{ x + 1, y + 0, z + 0, x, y, z, 0, 1, id, 4 },
+							{ x + 0, y + 0, z + 0, x, y, z, 1, 1, id, 4 },
+							{ x + 0, y + 0, z + 0, x, y, z, 1, 1, id, 4 },
+							{ x + 0, y + 1, z + 0, x, y, z, 1, 0, id, 4 },
+							{ x + 1, y + 1, z + 0, x, y, z, 0, 0, id, 4 },
 						};
 						this->vertices.insert(vertices.end(), verts.begin(), verts.end());
 					}
 					if (exposed & 1) {
 						// +z exposed
 						std::vector<Game::GFX::ChunkVertex> verts = {
-							{ x + 0, y + 0, z + 1, x, y, z, 0, 0, id, 5 },
-							{ x + 1, y + 0, z + 1, x, y, z, 1, 0, id, 5 },
-							{ x + 1, y + 1, z + 1, x, y, z, 1, 1, id, 5 },
-							{ x + 1, y + 1, z + 1, x, y, z, 1, 1, id, 5 },
-							{ x + 0, y + 1, z + 1, x, y, z, 0, 1, id, 5 },
-							{ x + 0, y + 0, z + 1, x, y, z, 0, 0, id, 5 },
+							{ x + 0, y + 0, z + 1, x, y, z, 0, 1, id, 5 },
+							{ x + 1, y + 0, z + 1, x, y, z, 1, 1, id, 5 },
+							{ x + 1, y + 1, z + 1, x, y, z, 1, 0, id, 5 },
+							{ x + 1, y + 1, z + 1, x, y, z, 1, 0, id, 5 },
+							{ x + 0, y + 1, z + 1, x, y, z, 0, 0, id, 5 },
+							{ x + 0, y + 0, z + 1, x, y, z, 0, 1, id, 5 },
 						};
 						this->vertices.insert(vertices.end(), verts.begin(), verts.end());
 					}

@@ -6,8 +6,8 @@
 
 bool focused = true;
 
-Engine::GameEngine::GameEngine() :
-	player(),
+Engine::GameEngine::GameEngine(int w, int h) :
+	player(w, h),
 	world(&this->player)
 	/*
 	axis(Engine::GFX::Shader("axis.v.glsl", "axis.f.glsl"),

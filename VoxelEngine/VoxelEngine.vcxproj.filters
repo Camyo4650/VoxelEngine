@@ -72,10 +72,10 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
+    <ClCompile Include="TextureArray.cpp">
       <Filter>Source Files\engine\gfx</Filter>
     </ClCompile>
-    <ClCompile Include="glad.c">
+    <ClCompile Include="..\..\..\..\Downloads\glad.c">
       <Filter>Source Files\dep</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,7 +119,7 @@
     <ClInclude Include="GLHelper.h">
       <Filter>Header Files\util</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="TextureArray.h">
       <Filter>Header Files\engine\gfx</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
