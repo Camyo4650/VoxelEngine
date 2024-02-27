@@ -75,8 +75,11 @@
     <ClCompile Include="TextureArray.cpp">
       <Filter>Source Files\engine\gfx</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Downloads\glad.c">
+    <ClCompile Include="glad.c">
       <Filter>Source Files\dep</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="VBO.h">
       <Filter>Header Files\engine\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Header Files\game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

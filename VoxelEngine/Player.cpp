@@ -7,8 +7,7 @@
 int xoffset, yoffset;
 float Yaw, Pitch;
 Game::Player::Player(int w, int h) :
-	chunkPos{ 0,0,0 },
-	pos(10,10,10),
+	pos(10,10,200),
 	camera(w,h)
 {
 	glm::vec3 front;
@@ -61,6 +60,12 @@ void Game::Player::input(SDL_Event* e)
 		case SDLK_d:
 			move[3] = true;
 			break;
+		case SDLK_SPACE:
+			move[4] = true;
+			break;
+		case SDLK_LSHIFT:
+			move[5] = true;
+			break;
 		}
 	}
 	if (e->type == SDL_KEYUP)
@@ -77,6 +82,12 @@ void Game::Player::input(SDL_Event* e)
 			break;
 		case SDLK_d:
 			move[3] = false;
+			break;
+		case SDLK_SPACE:
+			move[4] = false;
+			break;
+		case SDLK_LSHIFT:
+			move[5] = false;
 			break;
 		}
 	}
@@ -100,10 +111,24 @@ void Game::Player::update(double delta)
 	{
 		pos += 0.04f * (float)delta * camera.right;
 	}
+	if (move[4])
+	{
+		pos += 0.04f * (float)delta * camera.up;
+	}
+	if (move[5])
+	{
+		pos -= 0.04f * (float)delta * camera.up;
+	}
 	camera.view = glm::lookAt(pos, pos + camera.forward, camera.up);
+	
 }
 
 void Game::Player::render()
 {
 
+}
+
+Game::ChunkPos Game::Player::getChunkCoords()
+{
+	return { (int32_t)(pos.x / ChunkPos::SizeX), (int32_t)(pos.y / ChunkPos::SizeZ), (int8_t)(pos.z / ChunkPos::SizeZ) };
 }

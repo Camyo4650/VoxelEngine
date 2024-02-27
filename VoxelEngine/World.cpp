@@ -3,42 +3,38 @@
 #include <string>
 #include "VBO.h"
 
-int getChunkId(int x, int y, int z) {
-	size_t hx = std::hash<int>{}(x);
-	size_t hy = std::hash<int>{}(y);
-	size_t hz = std::hash<int>{}(z);
-	return hx ^ (hy << 1) ^ (hz << 2);
-};
-
 Game::World::World(Player* localPlayer) :
 	localPlayer(localPlayer),
-	texture("resources/texturepack-simple.jpg"),
-	chunkVBO()
+	texture("resources/texturepack-simple.png"),
+	chunkVBO(),
+	terrain()
 {
-	this->load();
+	this->loadChunks();
+
 	for (auto& chunk : renderedChunks)
 	{
 		Chunk* c = chunk.second;
 
-		int x  = getChunkId(c->chunkPos.X - 1, c->chunkPos.Y, c->chunkPos.Z);
-		int x1 = getChunkId(c->chunkPos.X + 1, c->chunkPos.Y, c->chunkPos.Z);
-		int y  = getChunkId(c->chunkPos.X, c->chunkPos.Y - 1, c->chunkPos.Z);
-		int y1 = getChunkId(c->chunkPos.X, c->chunkPos.Y + 1, c->chunkPos.Z);
-		int z  = getChunkId(c->chunkPos.X, c->chunkPos.Y, c->chunkPos.Z - 1);
-		int z1 = getChunkId(c->chunkPos.X, c->chunkPos.Y, c->chunkPos.Z + 1);
+		int x = Chunk::getChunkId({ c->chunkPos.X - 1, c->chunkPos.Y, c->chunkPos.Z });
+		int x1 = Chunk::getChunkId({ c->chunkPos.X + 1, c->chunkPos.Y, c->chunkPos.Z });
+		int y = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y - 1, c->chunkPos.Z });
+		int y1 = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y + 1, c->chunkPos.Z });
+		int z = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y, (int8_t)(c->chunkPos.Z - 1) });
+		int z1 = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y, (int8_t)(c->chunkPos.Z + 1) });
 
 		if (renderedChunks.contains(x))
-			c->Cx  = renderedChunks[x];
+			c->Cx = renderedChunks[x];
 		if (renderedChunks.contains(x1))
 			c->Cx1 = renderedChunks[x1];
 		if (renderedChunks.contains(y))
-			c->Cy  = renderedChunks[y];
+			c->Cy = renderedChunks[y];
 		if (renderedChunks.contains(y1))
 			c->Cy1 = renderedChunks[y1];
 		if (renderedChunks.contains(z))
-			c->Cz  = renderedChunks[z];
+			c->Cz = renderedChunks[z];
 		if (renderedChunks.contains(z1))
 			c->Cz1 = renderedChunks[z1];
+		
 		c->generateVertices();
 	}
 }
@@ -56,22 +52,37 @@ void Game::World::render()
 	}
 }
 
-void Game::World::load()
+void Game::World::loadChunks()
 {
+
 	// ideas:
 	// start with knowing player position.
 	// see all chunks that need to be created within the sphere of the player
-		// make sure these chunks are within the confines of the world (int32 x, y. int8 z)
+		// make sure these chunks are within the confines of the world (int32 x, y. uint8 z)
+	// we need to have a queue system to load chunks.
 
-	for (int x = -5; x < 5; x++)
+	// old code
+	int j = 0;
+	for (int x = -3; x < 3; x++)
 	{
-		for (int y = -5; y < 5; y++)
+		for (int y = -3; y < 3; y++)
 		{
-			int t = getChunkId(x, y, 0);
-			ChunkPos pos = { x, y, 0 };
-			renderedChunks[t] = new Chunk(texture, pos, &chunkVBO);
-			renderedChunks[t]->generateTerrain(NULL);
+			for (int z = 3; z < 6; z++)
+			{
+				ChunkPos pos = { x, y, z };
+				int t = Chunk::getChunkId(pos);
+				renderedChunks[t] = new Chunk(texture, pos, &chunkVBO);
+				renderedChunks[t]->generateTerrain(terrain.getHeightMap(pos));
+				if (!renderedChunks[t]->isEmpty())
+				{
+					renderedChunks[t]->generateCaves(terrain.getCaves(pos));
+				}
+			}
 		}
 	}
+}
+
+void Game::World::renderChunks()
+{
 }
 

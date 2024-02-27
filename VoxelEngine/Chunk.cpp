@@ -29,7 +29,7 @@ Game::Chunk::Chunk(Engine::GFX::TextureArray &texture, ChunkPos chunkPos, Engine
 bool Game::Chunk::isEmpty(int x, int y, int z)
 {
 	if (this == NULL) 
-		return true;
+		return false;
 	if (x < 0)  
 		return this->Cx->isEmpty(C_sizeX - 1, y, z);
 	else if (y < 0)  
@@ -61,16 +61,19 @@ uint8_t Game::Chunk::getExposedFaces(int x, int y, int z)
 	return faces;
 }
 
-void Game::Chunk::generateTerrain(uint8_t(*height)(int x, int y))
+void Game::Chunk::generateTerrain(std::vector<uint16_t> height)
 {// nothing complex.. for now ;)
-	uint8_t h[C_sizeX][C_sizeY];
-	if (height == NULL)
+	uint16_t h[C_sizeX][C_sizeY];
+	for (uint16_t y = 0; y < C_sizeY; y++)
 	{
-		for (uint16_t y = 0; y < C_sizeY; y++)
+		for (uint16_t x = 0; x < C_sizeX; x++)
 		{
-			for (uint16_t x = 0; x < C_sizeX; x++)
+			if (height.empty())
 			{
-				h[x][y] = rand() % 16;
+			}
+			else
+			{
+				h[x][y] = height[x + C_sizeX * y];
 			}
 		}
 	}
@@ -80,12 +83,41 @@ void Game::Chunk::generateTerrain(uint8_t(*height)(int x, int y))
 		{
 			for (uint16_t x = 0; x < C_sizeX; x++)
 			{
-				if (z < h[x][y])
-					this->blocks[x][y][z] = 2;
-				else if (z == h[x][y])
+				int realZ = this->chunkPos.Z * C_sizeZ + z;
+				if (realZ < h[x][y] && realZ >= h[x][y] - 4)
+				{
+					this->blocks[x][y][z] = 2;					
+					this->empty = false;
+				}
+				else if (realZ < h[x][y])
+				{
+					this->blocks[x][y][z] = 3;
+					this->empty = false;
+				}
+				else if (realZ == h[x][y])
+				{
 					this->blocks[x][y][z] = 1;
+					this->empty = false;
+				}
 				else
 					this->blocks[x][y][z] = 0;
+			}
+		}
+	}
+}
+
+void Game::Chunk::generateCaves(std::vector<bool> air)
+{
+	for (uint16_t z = 0; z < C_sizeZ; z++)
+	{
+		for (uint16_t y = 0; y < C_sizeY; y++)
+		{
+			for (uint16_t x = 0; x < C_sizeX; x++)
+			{
+				if (air[x + C_sizeX * (y + C_sizeY * z)]) 
+				{
+					blocks[x][y][z] = 0;
+				}
 			}
 		}
 	}
@@ -223,5 +255,5 @@ void Game::Chunk::draw(const glm::mat4& view, const glm::mat4& projection)
 
 Game::Chunk::~Chunk()
 {
-
+	delete(&vertices);
 }

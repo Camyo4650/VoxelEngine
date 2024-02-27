@@ -7,10 +7,9 @@
 namespace Game {
 	class Player
 	{
-		bool move[4];
+		bool move[6];
 		double time;
 	public:
-		ChunkPos chunkPos;
 		glm::vec3 pos;
 
 		GFX::Camera camera;
@@ -18,5 +17,7 @@ namespace Game {
 		void input(SDL_Event* e);
 		void update(double delta);
 		void render();
+
+		ChunkPos getChunkCoords();
 	};
 }

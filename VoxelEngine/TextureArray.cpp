@@ -49,9 +49,9 @@ Engine::GFX::TextureArray::TextureArray(const char* path)
         int tilesX = 16;
         int tilesY = 16;
         int imageCount = tilesX * tilesY;
-        glCall(glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB,
+        glCall(glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA,
             tileW, tileH, imageCount, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, nullptr));
+            GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
         for (int iy = 0; iy < tilesY; ++iy)
         {
             for (int ix = 0; ix < tilesX; ++ix)
@@ -63,7 +63,7 @@ Engine::GFX::TextureArray::TextureArray(const char* path)
                 glCall(glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0,
                     0, 0, i,
                     tileW, tileH, 1,
-                    GL_RGB, GL_UNSIGNED_BYTE, cropped->pixels));
+                    GL_RGBA, GL_UNSIGNED_BYTE, cropped->pixels));
                 SDL_FreeSurface(cropped);
             }
         }
