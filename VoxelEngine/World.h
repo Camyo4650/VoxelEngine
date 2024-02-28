@@ -10,7 +10,7 @@
 #include <map> 
 #include <queue>
 
-#define CHUNK_RENDER_DISTANCE 1 // radius
+#define CHUNK_RENDER_DISTANCE 3 // radius
 
 namespace Game
 {
@@ -21,12 +21,14 @@ namespace Game
 		std::map<int, Chunk*> newChunks; // cache chunks that need to be rendered
 		std::queue<Chunk*> qChunks; // queued chunks that need to be rendered
 		Engine::GFX::TextureArray texture;
+		ChunkPos lastPlayerPos;
 		Player* localPlayer;
 		Engine::GFX::VBO chunkVBO;
 		Terrain terrain;
 
 		void loadChunks();
 		void renderChunks();
+		void generateChunkAsync(Game::World* world, Game::Chunk* c);
 	public:
 		World(Player* localPlayer);
 		void update(double delta);

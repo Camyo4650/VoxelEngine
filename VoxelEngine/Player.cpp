@@ -130,5 +130,5 @@ void Game::Player::render()
 
 Game::ChunkPos Game::Player::getChunkCoords()
 {
-	return { (int32_t)(pos.x / ChunkPos::SizeX), (int32_t)(pos.y / ChunkPos::SizeZ), (int8_t)(pos.z / ChunkPos::SizeZ) };
+	return { (int32_t)(pos.x / ChunkPos::SizeX), (int32_t)(pos.y / ChunkPos::SizeY), (int8_t)(pos.z / ChunkPos::SizeZ) };
 }

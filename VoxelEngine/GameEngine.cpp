@@ -42,6 +42,7 @@ void Engine::GameEngine::input(SDL_Event* event)
 void Engine::GameEngine::update(double delta)
 {
 	this->player.update(delta);
+	this->world.update(delta);
 }
 
 void Engine::GameEngine::render()

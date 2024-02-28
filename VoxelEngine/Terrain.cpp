@@ -22,7 +22,7 @@ std::vector<uint16_t> Game::Terrain::getHeightMap(ChunkPos chunkPos)
 	{
 		for (int x = 0; x < C_sizeX; x++)
 		{
-			height.push_back(C_sizeZ * (4 + layer1[x + C_sizeX * y] / 4));
+			height.push_back(4 * C_sizeZ * (4 + layer1[x + C_sizeX * y] / 4));
 		}
 	}
 
@@ -55,6 +55,5 @@ std::vector<bool> Game::Terrain::getCaves(ChunkPos chunkPos)
 			}
 		}
 	}
-
 	return caveData;
 }

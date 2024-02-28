@@ -11,7 +11,7 @@
 
 #define C_sizeX 16
 #define C_sizeY 16
-#define C_sizeZ 64
+#define C_sizeZ 16
 
 namespace Game {
 	struct ChunkPos
@@ -19,11 +19,19 @@ namespace Game {
 		static const int SizeX = C_sizeX;
 		static const int SizeY = C_sizeY;
 		static const int SizeZ = C_sizeZ;
-		static const int MaxZ = 16;
+		static const int MaxZ = 64;
 
-		const int32_t X, Y; // 2^32 * C_sizeX blocks wide
+		int32_t X, Y; // 2^32 * C_sizeX blocks wide
 							// 2^32 * C_sizeY blocks long
-		const int8_t Z;		// 2^8  * C_sizeZ blocks tall
+		int8_t Z;		// 2^8  * C_sizeZ blocks tall
+
+		bool operator ==(const ChunkPos& other) {
+			return this->X == other.X && this->Y == other.Y && this->Z == other.Z;
+		}
+
+		bool operator !=(const ChunkPos& other) {
+			return this->X != other.X || this->Y != other.Y || this->Z != other.Z;
+		}
 	};
 
 	class Chunk 
@@ -42,11 +50,14 @@ namespace Game {
 		Chunk*	Cz; Chunk*	Cz1;
 		int relX, relY, relZ;
 		const ChunkPos chunkPos;
+
 		Chunk(Engine::GFX::TextureArray& texture, ChunkPos chunkPos, Engine::GFX::VBO * vbo);
+
 		bool isEmpty() const {
 			return empty;
 		}
 		bool isEmpty(int x, int y, int z);
+
 		static int getChunkId(ChunkPos pos) {
 			size_t hx = std::hash<int32_t>{}(pos.X);
 			size_t hy = std::hash<int32_t>{}(pos.Y);

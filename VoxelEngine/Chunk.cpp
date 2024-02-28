@@ -125,11 +125,11 @@ void Game::Chunk::generateCaves(std::vector<bool> air)
 
 void Game::Chunk::generateVertices()
 {
-	for (uint16_t z = 0; z < C_sizeZ; z++)
+	for (int z = 0; z < C_sizeZ; z++)
 	{
-		for (uint16_t y = 0; y < C_sizeY; y++)
+		for (int y = 0; y < C_sizeY; y++)
 		{
-			for (uint16_t x = 0; x < C_sizeX; x++)
+			for (int x = 0; x < C_sizeX; x++)
 			{
 				uint8_t exposed = getExposedFaces(x, y, z);
 				if (blocks[x][y][z] != 0 && exposed != 0)
