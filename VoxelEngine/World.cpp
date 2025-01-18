@@ -3,15 +3,17 @@
 #include <string>
 #include "VBO.h"
 #include <future>
+#include "Constants.h"
+#include <omp.h>
 
 Game::World::World(Player* localPlayer) :
 	localPlayer(localPlayer),
 	texture("resources/texturepack-simple.png"),
 	chunkVBO(),
 	terrain(),
-	lastPlayerPos(localPlayer->getChunkCoords())
+	lastPlayerPos(localPlayer->getChunkCoords()),
+	renderedChunks()
 {
-	this->loadChunks();
 }
 
 
@@ -33,103 +35,89 @@ void Game::World::render()
 	}
 }
 
-void Game::World::generateChunkAsync(Game::World* world, Game::Chunk* c)
+void Game::World::load()
 {
-	c->generateTerrain(world->terrain.getHeightMap(c->chunkPos));
-	if (!c->isEmpty())
+	this->loadChunks();
+}
+
+uint16_t Game::World::getBlockId(const ChunkPos& chunkPos, int x, int y, int z) {
+	ChunkPos adjustedChunkPos = { chunkPos.x, chunkPos.y, chunkPos.z };
+
+	// Handle boundary crossing
+	if (x < 0) { adjustedChunkPos.x--; x += C_sizeX; }
+	if (x >= C_sizeX) { adjustedChunkPos.x++; x -= C_sizeX; }
+	if (y < 0) { adjustedChunkPos.y--; y += C_sizeY; }
+	if (y >= C_sizeY) { adjustedChunkPos.y++; y -= C_sizeY; }
+	if (z < 0) { adjustedChunkPos.z--; z += C_sizeZ; }
+	if (z >= C_sizeZ) { adjustedChunkPos.z++; z -= C_sizeZ; }
+
+	// Check if the adjusted chunk exists
+	auto it = this->newChunks.find(adjustedChunkPos);
+	if (it == this->newChunks.end())
 	{
-		c->generateCaves(world->terrain.getCaves(c->chunkPos));
+		Chunk* c = this->loadChunkAt(adjustedChunkPos);
+		return c->getBlockId(x, y, z);
 	}
+
+	// Delegate to the chunk-level `getBlockId`
+	return it->second->getBlockId(x, y, z);
+}
+
+Game::Chunk* Game::World::loadChunkAt(const ChunkPos& pos)
+{
+	auto it = newChunks.find(pos);
+	Chunk* c = NULL;
+	if (it != newChunks.end()) c = newChunks[pos];
+	else
+	{
+		c = new Chunk(this, pos, texture, &chunkVBO);
+		c->generateTerrain(this->terrain.getHeightMap(pos));
+		if (!c->isEmpty())
+		{
+			c->generateCaves(this->terrain.getCaves(pos));
+		}
+#pragma omp critical
+		newChunks.emplace(pos, c);
+	}
+	return c;
 }
 
 void Game::World::loadChunks()
 {
 	ChunkPos plrCoords = localPlayer->getChunkCoords();
 	// within CHUNK_RENDER_DISTANCE
-	for (int y = -CHUNK_RENDER_DISTANCE; y <= CHUNK_RENDER_DISTANCE; y++)
+#pragma omp parallel
 	{
-		for (int x = -CHUNK_RENDER_DISTANCE; x <= CHUNK_RENDER_DISTANCE; x++)
+#pragma omp single
 		{
-			if (x * x + y * y <= CHUNK_RENDER_DISTANCE * CHUNK_RENDER_DISTANCE)
+			for (int y = -CHUNK_RENDER_DISTANCE; y <= CHUNK_RENDER_DISTANCE; y++)
 			{
-				for (int z = -1 - CHUNK_RENDER_DISTANCE / 2; z <= 1 + CHUNK_RENDER_DISTANCE / 2; z++)
+				for (int x = -CHUNK_RENDER_DISTANCE; x <= CHUNK_RENDER_DISTANCE; x++)
 				{
-					ChunkPos pos = { plrCoords.X + x, plrCoords.Y + y, plrCoords.Z + z };
-					int ID = Chunk::getChunkId(pos);
-					if (renderedChunks.contains(ID)) continue;
-					if (z < 0) continue;
-					if (z >= ChunkPos::MaxZ) break;
-					Chunk* c = new Chunk(texture, pos, &chunkVBO);
-					newChunks[ID] = c;
-					auto handle = std::async(std::launch::async, [this, c] { generateChunkAsync(this, c); qChunks.push(c); });
+					if (x * x + y * y <= CHUNK_RENDER_DISTANCE * CHUNK_RENDER_DISTANCE)
+					{
+						for (int z = -CHUNK_RENDER_DISTANCE; z <= CHUNK_RENDER_DISTANCE; z++)
+						{
+							ChunkPos pos = { plrCoords.x + x, plrCoords.y + y, plrCoords.z + z };
+							if (pos.z < 0) continue;
+							if (pos.z >= ChunkPos::MaxZ) break;
+							Chunk* chunk = nullptr;
+							if (!newChunks.contains(pos))
+							{
+								chunk = this->loadChunkAt(pos);
+							}
+							else
+							{
+								chunk = newChunks[pos];
+							}
+							#pragma omp critical
+							qChunksRender.push(chunk);
+						}
+					}
 				}
 			}
 		}
 	}
-
-	for (auto& chunk : newChunks)
-	{
-		Chunk* c = chunk.second;
-
-		int x  = Chunk::getChunkId({ c->chunkPos.X - 1, c->chunkPos.Y, c->chunkPos.Z });
-		int x1 = Chunk::getChunkId({ c->chunkPos.X + 1, c->chunkPos.Y, c->chunkPos.Z });
-		int y  = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y - 1, c->chunkPos.Z });
-		int y1 = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y + 1, c->chunkPos.Z });
-		int z  = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y, (int8_t)(c->chunkPos.Z - 1) });
-		int z1 = Chunk::getChunkId({ c->chunkPos.X, c->chunkPos.Y, (int8_t)(c->chunkPos.Z + 1) });
-
-		if (newChunks.contains(x))
-			c->Cx = newChunks[x];
-		if (newChunks.contains(x1))
-			c->Cx1 = newChunks[x1];
-		if (newChunks.contains(y))
-			c->Cy = newChunks[y];
-		if (newChunks.contains(y1))
-			c->Cy1 = newChunks[y1];
-		if (newChunks.contains(z))
-			c->Cz = newChunks[z];
-		if (newChunks.contains(z1))
-			c->Cz1 = newChunks[z1];
-		// now check already rendered chunks
-		
-		if (renderedChunks.contains(x))
-		{
-			c->Cx = renderedChunks[x];
-			renderedChunks[x]->Cx1  = c;
-			qChunks.push(renderedChunks[x]);
-		}
-		if (renderedChunks.contains(x1))
-		{
-			c->Cx1 = renderedChunks[x1];
-			renderedChunks[x1]->Cx  = c;
-			qChunks.push(renderedChunks[x1]);
-		}
-		if (renderedChunks.contains(y))
-		{
-			c->Cy = renderedChunks[y];
-			renderedChunks[y]->Cy1  = c;
-			qChunks.push(renderedChunks[y]);
-		}
-		if (renderedChunks.contains(y1))
-		{
-			c->Cy1 = renderedChunks[y1];
-			renderedChunks[y1]->Cy  = c;
-			qChunks.push(renderedChunks[y1]);
-		}
-		if (renderedChunks.contains(z))
-		{
-			c->Cz = renderedChunks[z];
-			renderedChunks[z]->Cz1  = c;
-			qChunks.push(renderedChunks[z]);
-		}
-		if (renderedChunks.contains(z1))
-		{
-			c->Cz1 = renderedChunks[z1];
-			renderedChunks[z1]->Cz  = c;
-			qChunks.push(renderedChunks[z1]);
-		}
-	}
-	newChunks.clear();
 }
 
 void Game::World::renderChunks()
@@ -164,14 +152,15 @@ void Game::World::renderChunks()
 	*/
 
 	// NEW code
-	int curSize = qChunks.size();
-	while (!qChunks.empty() && (int)qChunks.size() > curSize / 2) { // aim to shrink it by 1/2 each cycle
-		Chunk* c = qChunks.front();
-		qChunks.pop();
-		int t = c->ID();
-		renderedChunks[t] = c;
-		c->generateVertices();
+	int curSize = qChunksRender.size();
+	int i = 0;
+	while (!qChunksRender.empty() && i < curSize / 2) { // aim to shrink it by 1/2 each cycle
+		Chunk* c = qChunksRender.front();
+		qChunksRender.pop();
+		renderedChunks.emplace(c->chunkPos, c);
+		c->generateMesh();
 		//auto handle = std::async(std::launch::async, [c] { c->generateVertices(); });
+		i++;
 	}
 }
 

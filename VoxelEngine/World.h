@@ -17,9 +17,10 @@ namespace Game
 	class World
 	{
 		std::vector<Chunk> modifiedChunks;
-		std::map<int, Chunk*> renderedChunks; // cache chunks that are within range of the player.
-		std::map<int, Chunk*> newChunks; // cache chunks that need to be rendered
-		std::queue<Chunk*> qChunks; // queued chunks that need to be rendered
+		std::unordered_map<ChunkPos, Chunk*, std::hash<ChunkPos>> renderedChunks;
+		std::unordered_map<ChunkPos, Chunk*, std::hash<ChunkPos>> newChunks; // cache chunks that need to be rendered
+		std::queue<Chunk*> qChunksRender; // queued chunks that need to be rendered
+		std::queue<Chunk*> qChunksLoad; // queued chunks that need to be rendered
 		Engine::GFX::TextureArray texture;
 		ChunkPos lastPlayerPos;
 		Player* localPlayer;
@@ -28,11 +29,14 @@ namespace Game
 
 		void loadChunks();
 		void renderChunks();
-		void generateChunkAsync(Game::World* world, Game::Chunk* c);
+		Chunk* loadChunkAt(const ChunkPos& chunkPos);
 	public:
 		World(Player* localPlayer);
 		void update(double delta);
 		void render();
+		void load();
+
+		uint16_t getBlockId(const ChunkPos& chunkPos, int x, int y, int z);
 	};
 }
 #endif

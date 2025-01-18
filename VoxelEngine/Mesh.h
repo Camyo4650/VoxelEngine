@@ -15,7 +15,6 @@ namespace GFX {
 		VBO vbo;
 		VAO vao;
 		std::vector<VertexAttribute> vertexAttribs;
-		int dataSize = 0;
 		void init();
 	public:
 		Shader shader;

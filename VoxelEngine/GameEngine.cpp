@@ -16,6 +16,7 @@ Engine::GameEngine::GameEngine(int w, int h) :
 		{1, GL_INT,		GL_FALSE, sizeof(Game::GFX::AxisVertex), (void*)(3 * sizeof(float))}
 	}, new Engine::GFX::VBO())*/
 {
+	world.load();
 }
 
 void Engine::GameEngine::input(SDL_Event* event)

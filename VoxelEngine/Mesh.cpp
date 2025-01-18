@@ -27,7 +27,6 @@ void Engine::GFX::Mesh::addBufferData(const void* data, int dataSize, GLenum usa
 	shader.use();
 	vbo.bind(GL_ARRAY_BUFFER);
 	vao.bind();
-	this->dataSize = dataSize;
 	glCall(glBufferData(GL_ARRAY_BUFFER, dataSize, data, usage));
 }
 

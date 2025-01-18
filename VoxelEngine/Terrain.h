@@ -17,7 +17,7 @@ namespace Game
 	class Terrain
 	{
 		FastNoise::SmartNode<FastNoise::Perlin> noise;
-		std::map<int, NoiseData> storedNoise;
+		std::unordered_map<ChunkPos, NoiseData> storedNoise;
 	public:
 		Terrain();
 		std::vector<uint16_t> getHeightMap(ChunkPos chunkPos);
