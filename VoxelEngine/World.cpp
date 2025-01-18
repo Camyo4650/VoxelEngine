@@ -94,9 +94,9 @@ void Game::World::loadChunks()
 			{
 				for (int x = -CHUNK_RENDER_DISTANCE; x <= CHUNK_RENDER_DISTANCE; x++)
 				{
-					if (x * x + y * y <= CHUNK_RENDER_DISTANCE * CHUNK_RENDER_DISTANCE)
+					if (x * x + y * y <= 2 * CHUNK_RENDER_DISTANCE * CHUNK_RENDER_DISTANCE)
 					{
-						for (int z = -CHUNK_RENDER_DISTANCE; z <= CHUNK_RENDER_DISTANCE; z++)
+						for (int z = -CHUNK_RENDER_DISTANCE / 2; z <= CHUNK_RENDER_DISTANCE / 2; z++)
 						{
 							ChunkPos pos = { plrCoords.x + x, plrCoords.y + y, plrCoords.z + z };
 							if (pos.z < 0) continue;

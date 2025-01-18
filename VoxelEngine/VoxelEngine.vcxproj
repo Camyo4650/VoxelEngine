@@ -177,6 +177,7 @@
   <ItemGroup>
     <None Include="axis.f.glsl" />
     <None Include="chunk.f.glsl" />
+    <None Include="chunk.g.glsl" />
     <None Include="chunk.v.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

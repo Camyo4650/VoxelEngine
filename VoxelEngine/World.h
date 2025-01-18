@@ -10,7 +10,7 @@
 #include <map> 
 #include <queue>
 
-#define CHUNK_RENDER_DISTANCE 3 // radius
+#define CHUNK_RENDER_DISTANCE 4 // radius
 
 namespace Game
 {

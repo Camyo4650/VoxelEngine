@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 const ivec2 atlasSize = ivec2(128, 128);
 const ivec2 tileSize = ivec2(8, 8);
 

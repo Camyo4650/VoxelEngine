@@ -4,25 +4,23 @@
 
 std::vector<Engine::GFX::VertexAttribute> ChunkVertexAttribs = {
 	{3, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), 0},
-	{3, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), (void*)(3 * sizeof(int))},
-	{2, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), (void*)(6 * sizeof(int))},
-	{1, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), (void*)(8 * sizeof(int))},
-	{1, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), (void*)(9 * sizeof(int))}
+	{1, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), (void*)(3 * sizeof(int))},
+	{1, GL_INT, GL_FALSE, sizeof(Game::GFX::ChunkVertex), (void*)(4 * sizeof(int))}
 };
 
 
-void Game::GFX::ChunkMesh::addFaceToMesh(int x, int y, int z, int face, int blockId)
+void Game::GFX::ChunkMesh::addFaceToMesh(uint8_t x, uint8_t y, uint8_t z, uint8_t face, uint16_t blockId)
 {
 
 #define face(offset) ((6 * face) + offset)
 
 	std::vector<Game::GFX::ChunkVertex> vertsV = {
-		{ x + vCoords[face(0)][0], y + vCoords[face(0)][1], z + vCoords[face(0)][2], x, y, z, vCoords[face(0)][3], vCoords[face(0)][4], blockId, face},
-		{ x + vCoords[face(1)][0], y + vCoords[face(1)][1], z + vCoords[face(1)][2], x, y, z, vCoords[face(1)][3], vCoords[face(1)][4], blockId, face},
-		{ x + vCoords[face(2)][0], y + vCoords[face(2)][1], z + vCoords[face(2)][2], x, y, z, vCoords[face(2)][3], vCoords[face(2)][4], blockId, face},
-		{ x + vCoords[face(3)][0], y + vCoords[face(3)][1], z + vCoords[face(3)][2], x, y, z, vCoords[face(3)][3], vCoords[face(3)][4], blockId, face},
-		{ x + vCoords[face(4)][0], y + vCoords[face(4)][1], z + vCoords[face(4)][2], x, y, z, vCoords[face(4)][3], vCoords[face(4)][4], blockId, face},
-		{ x + vCoords[face(5)][0], y + vCoords[face(5)][1], z + vCoords[face(5)][2], x, y, z, vCoords[face(5)][3], vCoords[face(5)][4], blockId, face},
+		{ x, y, z, blockId, face},
+		{ x, y, z, blockId, face},
+		{ x, y, z, blockId, face},
+		{ x, y, z, blockId, face},
+		{ x, y, z, blockId, face},
+		{ x, y, z, blockId, face},
 	};
 	this->vertices.insert(vertices.end(), vertsV.begin(), vertsV.end());
 }

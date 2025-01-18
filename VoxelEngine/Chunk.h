@@ -45,7 +45,7 @@ namespace Game {
 
 			ChunkMesh(Engine::GFX::TextureArray& texture, Engine::GFX::VBO* vbo);
 			void draw(const glm::mat4& view, const glm::mat4& projection, const ChunkPos& chunkPos);
-			void addFaceToMesh(int x, int y, int z, int face, int blockId);
+			void addFaceToMesh(uint8_t x, uint8_t y, uint8_t z, uint8_t face, uint16_t blockId);
 			void generateMesh();
 			~ChunkMesh();
 		};
