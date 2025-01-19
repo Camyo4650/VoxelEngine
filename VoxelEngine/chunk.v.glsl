@@ -6,6 +6,7 @@ layout (location = 2) in int aFace;
 out vec2 TexCoord;
 flat out int BlockID;
 flat out int Face;
+flat out int layer;
 
 // Predefined vertex offsets for all faces
 const vec3 vertexOffsets[6][6] = vec3[6][6](
@@ -50,6 +51,15 @@ void main()
     vec2 texOffset = textureOffsets[aFace][gl_VertexID % 6];
 
     vec3 worldPos = aPos + offset;
+    
+    if (aBlockID == 1)
+    {
+        if (aFace == 4) layer = 2;
+        else if (aFace != 5) layer = 1;
+        else layer = 0;
+    } else {
+        layer = aBlockID;
+    }
 
 	gl_Position = projection * view * model * vec4(worldPos, 1.0f);
 	TexCoord = texOffset;

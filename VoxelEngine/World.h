@@ -9,6 +9,7 @@
 #include "Terrain.h"
 #include <map> 
 #include <queue>
+#include "ThreadSafeQueue.h"
 
 #define CHUNK_RENDER_DISTANCE 4 // radius
 
@@ -19,8 +20,7 @@ namespace Game
 		std::vector<Chunk> modifiedChunks;
 		std::unordered_map<ChunkPos, Chunk*, std::hash<ChunkPos>> renderedChunks;
 		std::unordered_map<ChunkPos, Chunk*, std::hash<ChunkPos>> newChunks; // cache chunks that need to be rendered
-		std::queue<Chunk*> qChunksRender; // queued chunks that need to be rendered
-		std::queue<Chunk*> qChunksLoad; // queued chunks that need to be rendered
+		Game::Util::ThreadSafeQueue<Chunk*> qChunksRender; // queued chunks that need to be rendered
 		Engine::GFX::TextureArray texture;
 		ChunkPos lastPlayerPos;
 		Player* localPlayer;

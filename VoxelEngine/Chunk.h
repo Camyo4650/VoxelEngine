@@ -5,6 +5,8 @@
 #include "TextureArray.h"
 #include "Mesh.h"
 #include "VBO.h"
+#include <mutex>
+#include <atomic>
 
 #define C_sizeX 16
 #define C_sizeY 16
@@ -46,19 +48,58 @@ namespace Game {
 			ChunkMesh(Engine::GFX::TextureArray& texture, Engine::GFX::VBO* vbo);
 			void draw(const glm::mat4& view, const glm::mat4& projection, const ChunkPos& chunkPos);
 			void addFaceToMesh(uint8_t x, uint8_t y, uint8_t z, uint8_t face, uint16_t blockId);
-			void generateMesh();
+			void uploadToGPU();
+			void clear();
 			~ChunkMesh();
 		};
 	}
 
+	struct ChunkPalette {
+		// Palette: Maps indices to block types
+		std::vector<uint16_t> palette;
+
+		// Indices: 3D array mapping positions to indices in the palette
+		std::vector<std::vector<std::vector<uint16_t>>> indices;
+
+		// Initialize with chunk dimensions
+		ChunkPalette(uint8_t width, uint8_t height, uint8_t depth)
+			: indices(width, std::vector<std::vector<uint16_t>>(height, std::vector<uint16_t>(depth, 0))) {
+		}
+
+		// Add a block type to the palette and return its index
+		uint16_t addToPalette(uint16_t blockID) {
+			auto it = std::find(palette.begin(), palette.end(), blockID);
+			if (it != palette.end()) {
+				return std::distance(palette.begin(), it); // Return existing index
+			}
+			palette.push_back(blockID); // Add new blockID
+			return palette.size() - 1; // Return new index
+		}
+
+		// Set a block at a position (x, y, z)
+		void setBlock(uint8_t x, uint8_t y, uint8_t z, uint16_t blockID) {
+			uint16_t index = addToPalette(blockID);
+			indices[x][y][z] = index;
+		}
+
+		// Get the block ID at a position (x, y, z)
+		int getBlock(uint8_t x, uint8_t y, uint8_t z) const {
+			uint16_t index = indices[x][y][z];
+			return palette[index];
+		}
+	};
+
 	class Chunk
 	{
 		GFX::ChunkMesh mesh;
-		uint16_t blocks[C_sizeX][C_sizeY][C_sizeZ];
+		ChunkPalette palette;
 		bool modified;
-		bool redraw;
+		bool ready = false;
 		bool empty = true;
 		World* world;
+
+		std::mutex meshMutex; // Protects vertex data
+		std::atomic<bool> meshReady = false; // Indicates if the mesh is ready
 	public:
 		//		-1			+1
 		Chunk* Cx; Chunk* Cx1;
@@ -76,6 +117,8 @@ namespace Game {
 
 		uint16_t getBlockId(uint8_t x, uint8_t y, uint8_t z) const;
 		void setBlockId(uint8_t x, uint8_t y, uint8_t z, uint16_t blockId);
+		
+		void load(ChunkPalette palette);
 
 		//  7  6  5  4  3  2  1  0
 		//  _  _ -x +x -y +y -z +z
@@ -83,6 +126,7 @@ namespace Game {
 		void generateTerrain(std::vector<uint16_t> heightmap); // someday... algorithm ;)
 		void generateCaves(std::vector<bool> air);
 		void generateMesh();
+		void uploadToGPU();
 		void modify(uint16_t blockId, int x, int y, int z);
 		void draw(const glm::mat4& view, const glm::mat4& projection);
 		~Chunk();

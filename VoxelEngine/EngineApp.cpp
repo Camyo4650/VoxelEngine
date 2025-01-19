@@ -51,6 +51,8 @@ namespace Engine
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 
+		SDL_GL_SetSwapInterval(0); // 0 disables V-Sync in SDL
+
 		G_GFX_APP_WINDOW = SDL_CreateWindow("VoxelEngine", 100, 100, SCR_W, SCR_H, SDL_WINDOW_OPENGL);
 
 		if (G_GFX_APP_WINDOW == nullptr)
@@ -59,6 +61,8 @@ namespace Engine
 				<< std::endl;
 			exit(1);
 		}
+
+		SDL_Renderer* renderer = SDL_CreateRenderer(G_GFX_APP_WINDOW, -1, SDL_RENDERER_ACCELERATED);
 
 		G_OpenGL_CONTEXT = SDL_GL_CreateContext(G_GFX_APP_WINDOW);
 

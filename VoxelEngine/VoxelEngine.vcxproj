@@ -169,6 +169,9 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TextureArray.h" />
+    <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="ThreadSafeQueue.h" />
+    <ClInclude Include="ThreadSafeUMap.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
     <ClInclude Include="VertexAttribute.h" />

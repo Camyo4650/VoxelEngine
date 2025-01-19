@@ -9,7 +9,8 @@
 Game::Chunk::Chunk(World* world, ChunkPos chunkPos, Engine::GFX::TextureArray &texture, Engine::GFX::VBO * vbo) :
 	mesh(texture, vbo),
 	chunkPos(chunkPos),
-	world(world)
+	world(world),
+	palette(C_sizeX, C_sizeY, C_sizeZ)
 {
 	relX = chunkPos.x;
 	relY = chunkPos.y;
@@ -20,24 +21,28 @@ bool Game::Chunk::isEmpty(int x, int y, int z)
 {
 	if (this == NULL) 
 		return false;
-	if (x < 0)  
+	if (x < 0)
 		return this->Cx->isEmpty(C_sizeX - 1, y, z);
-	else if (y < 0)  
+	else if (y < 0)
 		return this->Cy->isEmpty(x, C_sizeY - 1, z);
-	else if (z < 0)  
+	else if (z < 0)
 		return this->Cz->isEmpty(x, y, C_sizeZ - 1);
-	else if (x >= C_sizeX) 
+	else if (x >= C_sizeX)
 		return this->Cx1->isEmpty(0, y, z);
-	else if (y >= C_sizeY) 
+	else if (y >= C_sizeY)
 		return this->Cy1->isEmpty(x, 0, z);
-	else if (z >= C_sizeZ) 
+	else if (z >= C_sizeZ)
 		return this->Cz1->isEmpty(x, y, 0);
-	else return this->blocks[x][y][z] == 0;
+	else return this->palette.getBlock(x, y, z);
 }
 
 uint16_t Game::Chunk::getBlockId(uint8_t x, uint8_t y, uint8_t z) const
 {
-	return blocks[x][y][z];
+	return this->palette.getBlock(x, y, z);
+}
+
+void Game::Chunk::load(ChunkPalette palette)
+{
 }
 
 void Game::Chunk::generateTerrain(std::vector<uint16_t> height)
@@ -56,7 +61,6 @@ void Game::Chunk::generateTerrain(std::vector<uint16_t> height)
 			}
 		}
 	}
-#pragma omp parallel for
 	for (uint16_t z = 0; z < C_sizeZ; z++)
 	{
 		for (uint16_t y = 0; y < C_sizeY; y++)
@@ -66,21 +70,21 @@ void Game::Chunk::generateTerrain(std::vector<uint16_t> height)
 				int realZ = this->chunkPos.z * C_sizeZ + z;
 				if (realZ < h[x][y] && realZ >= h[x][y] - 4)
 				{
-					this->blocks[x][y][z] = 2;					
+					this->palette.setBlock(x, y, z, 2);	
 					this->empty = false;
 				}
 				else if (realZ < h[x][y])
 				{
-					this->blocks[x][y][z] = 3;
+					this->palette.setBlock(x, y, z, 3);
 					this->empty = false;
 				}
 				else if (realZ == h[x][y])
 				{
-					this->blocks[x][y][z] = 1;
+					this->palette.setBlock(x, y, z, 1);
 					this->empty = false;
 				}
 				else
-					this->blocks[x][y][z] = 0;
+					this->palette.setBlock(x, y, z, 0);
 			}
 		}
 	}
@@ -96,7 +100,7 @@ void Game::Chunk::generateCaves(std::vector<bool> air)
 			{
 				if (air[x + C_sizeX * (y + C_sizeY * z)]) 
 				{
-					blocks[x][y][z] = 0;
+					this->palette.setBlock(x, y, z, 0);
 				}
 			}
 		}
@@ -105,6 +109,9 @@ void Game::Chunk::generateCaves(std::vector<bool> air)
 
 void Game::Chunk::generateMesh()
 {
+	ready = false;
+	std::lock_guard<std::mutex> lock(meshMutex);
+	this->mesh.clear();
 
 	for (int z = 0; z < C_sizeZ; z++)
 	{
@@ -129,18 +136,31 @@ void Game::Chunk::generateMesh()
 			}
 		}
 	}
-	mesh.generateMesh();
+
+	meshReady.store(true); // Mark the mesh as ready
+}
+
+void Game::Chunk::uploadToGPU()
+{
+	if (!meshReady.load()) return; // Skip if mesh is not ready
+
+	std::lock_guard<std::mutex> lock(meshMutex);
+	mesh.uploadToGPU();
+	ready = true;
+	meshReady.store(false); // Reset the flag
 }
 
 void Game::Chunk::modify(uint16_t blockId, int x, int y, int z)
 {
 	modified = true;
-	redraw = true;
-	blocks[x][y][z] = blockId;
+	ready = true;
+	this->palette.setBlock(x, y, z, blockId);
 }
 
 void Game::Chunk::draw(const glm::mat4& view, const glm::mat4& projection)
 {
+	if (!ready) return; // Skip if mesh is not ready
+	std::lock_guard<std::mutex> lock(meshMutex);
 	mesh.draw(view, projection, this->chunkPos);
 }
 

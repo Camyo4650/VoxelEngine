@@ -4,7 +4,9 @@
 #include "VBO.h"
 #include <future>
 #include "Constants.h"
-#include <omp.h>
+#include "ThreadPool.h"
+
+Game::Util::ThreadPool threadPool(std::thread::hardware_concurrency());
 
 Game::World::World(Player* localPlayer) :
 	localPlayer(localPlayer),
@@ -56,6 +58,7 @@ uint16_t Game::World::getBlockId(const ChunkPos& chunkPos, int x, int y, int z) 
 	if (it == this->newChunks.end())
 	{
 		Chunk* c = this->loadChunkAt(adjustedChunkPos);
+		if (c == NULL) return 1;
 		return c->getBlockId(x, y, z);
 	}
 
@@ -65,54 +68,51 @@ uint16_t Game::World::getBlockId(const ChunkPos& chunkPos, int x, int y, int z) 
 
 Game::Chunk* Game::World::loadChunkAt(const ChunkPos& pos)
 {
-	auto it = newChunks.find(pos);
-	Chunk* c = NULL;
-	if (it != newChunks.end()) c = newChunks[pos];
+	if (!newChunks.contains(pos)) return NULL;
 	else
 	{
-		c = new Chunk(this, pos, texture, &chunkVBO);
+		Chunk* c = newChunks[pos];
 		c->generateTerrain(this->terrain.getHeightMap(pos));
 		if (!c->isEmpty())
 		{
 			c->generateCaves(this->terrain.getCaves(pos));
 		}
-#pragma omp critical
 		newChunks.emplace(pos, c);
+		return c;
 	}
-	return c;
 }
 
 void Game::World::loadChunks()
 {
 	ChunkPos plrCoords = localPlayer->getChunkCoords();
 	// within CHUNK_RENDER_DISTANCE
-#pragma omp parallel
+	for (int y = -CHUNK_RENDER_DISTANCE; y <= CHUNK_RENDER_DISTANCE; y++)
 	{
-#pragma omp single
+		for (int x = -CHUNK_RENDER_DISTANCE; x <= CHUNK_RENDER_DISTANCE; x++)
 		{
-			for (int y = -CHUNK_RENDER_DISTANCE; y <= CHUNK_RENDER_DISTANCE; y++)
+			if (x * x + y * y <= 2 * CHUNK_RENDER_DISTANCE * CHUNK_RENDER_DISTANCE)
 			{
-				for (int x = -CHUNK_RENDER_DISTANCE; x <= CHUNK_RENDER_DISTANCE; x++)
+				for (int z = -CHUNK_RENDER_DISTANCE / 2; z <= CHUNK_RENDER_DISTANCE / 2; z++)
 				{
-					if (x * x + y * y <= 2 * CHUNK_RENDER_DISTANCE * CHUNK_RENDER_DISTANCE)
+					ChunkPos pos = { plrCoords.x + x, plrCoords.y + y, plrCoords.z + z };
+					if (pos.z < 0 || pos.z >= ChunkPos::MaxZ) break;
+					if (!newChunks.contains(pos))
 					{
-						for (int z = -CHUNK_RENDER_DISTANCE / 2; z <= CHUNK_RENDER_DISTANCE / 2; z++)
-						{
-							ChunkPos pos = { plrCoords.x + x, plrCoords.y + y, plrCoords.z + z };
-							if (pos.z < 0) continue;
-							if (pos.z >= ChunkPos::MaxZ) break;
-							Chunk* chunk = nullptr;
-							if (!newChunks.contains(pos))
-							{
-								chunk = this->loadChunkAt(pos);
-							}
-							else
-							{
-								chunk = newChunks[pos];
-							}
-							#pragma omp critical
+						newChunks[pos] = new Chunk(this, pos, this->texture, &this->chunkVBO);
+						threadPool.enqueue([this, pos]() {
+							Chunk* chunk = this->loadChunkAt(pos);
 							qChunksRender.push(chunk);
-						}
+						});
+					}
+					else if (!renderedChunks.contains(pos))
+					{ 
+						/*
+						TODO: 
+						I wish to update chunk meshes after their neighbor chunks are generated (terrain)
+						One way I am thinking of achieving this is by not letting chunks render until their neighbors have been generated in terrain
+						*/
+						Chunk* chunk = newChunks[pos];
+						qChunksRender.push(chunk);
 					}
 				}
 			}
@@ -152,15 +152,19 @@ void Game::World::renderChunks()
 	*/
 
 	// NEW code
-	int curSize = qChunksRender.size();
 	int i = 0;
-	while (!qChunksRender.empty() && i < curSize / 2) { // aim to shrink it by 1/2 each cycle
-		Chunk* c = qChunksRender.front();
-		qChunksRender.pop();
+	while (!qChunksRender.empty()) { // aim to shrink it by 1/2 each cycle
+		Chunk* c = qChunksRender.pop();
 		renderedChunks.emplace(c->chunkPos, c);
-		c->generateMesh();
+		threadPool.enqueue([this, c]() {
+			c->generateMesh();
+		});
 		//auto handle = std::async(std::launch::async, [c] { c->generateVertices(); });
 		i++;
+	}
+
+	for (auto& c : renderedChunks) {
+		c.second->uploadToGPU();
 	}
 }
 

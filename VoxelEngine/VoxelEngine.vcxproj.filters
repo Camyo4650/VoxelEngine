@@ -49,6 +49,12 @@
     <Filter Include="Source Files\dep">
       <UniqueIdentifier>{8504cdd1-fd66-4c33-8310-24343888cf94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\game\util">
+      <UniqueIdentifier>{e3197469-5920-4bfe-9437-9a0c96183563}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game\util">
+      <UniqueIdentifier>{eec193ac-f7c7-4ea9-bf7d-656563849cf5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -80,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
       <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkMesh.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +146,18 @@
     <ClInclude Include="Terrain.h">
       <Filter>Header Files\game</Filter>
     </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadSafeQueue.h">
+      <Filter>Header Files\game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Header Files\game\util</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadSafeUMap.h">
+      <Filter>Header Files\game\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="chunk.v.glsl">
@@ -157,6 +178,7 @@
     <None Include="axis.f.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="chunk.g.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\texturepack-simple.png">

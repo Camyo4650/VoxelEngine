@@ -32,6 +32,7 @@ void Engine::GFX::Mesh::addBufferData(const void* data, int dataSize, GLenum usa
 
 void Engine::GFX::Mesh::draw(int indices)
 {
+	if (indices == 0) return;
 	shader.use();
 	vbo.bind(GL_ARRAY_BUFFER);
 	vao.bind();

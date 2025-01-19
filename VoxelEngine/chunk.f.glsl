@@ -7,6 +7,7 @@ uniform float opacity;
 uniform vec3 hint;
 
 in vec2 TexCoord;
+flat in int layer;
 flat in int BlockID; 
 flat in int Face;
 out vec4 FragColor;
@@ -19,16 +20,6 @@ void main()
     // temporary "shadow"
     if (Face == 4) faceColor = faceColor*1/2.f;
     else if (Face != 5) faceColor = faceColor*2/3.f;
-
-    int layer = 0;
-    if (BlockID == 1)
-    {
-        if (Face == 4) layer = 2;
-        else if (Face != 5) layer = 1;
-        else layer = 0;
-    } else {
-        layer = BlockID;
-    }
 
     //FragColor = vec4(vec3(texture(textureAtlas, (TexCoord+vec2(mod(tile, tileSize.x), floor(tile/tileSize.x)))*tileSize / atlasSize))*faceColor, opacity);
     FragColor = vec4(vec3(texture(textureAtlas, vec3(TexCoord, layer)))*faceColor, opacity);

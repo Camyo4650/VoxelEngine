@@ -10,6 +10,7 @@ namespace Engine {
 	{
 		Game::Player player;
 		Game::World world;
+		uint32_t lastTime, frameCount;
 		//Engine::GFX::Mesh axis; // later we can move this to a construct called GUI
 	public:
 		GameEngine(int w, int h);

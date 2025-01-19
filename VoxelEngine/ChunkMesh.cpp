@@ -25,10 +25,15 @@ void Game::GFX::ChunkMesh::addFaceToMesh(uint8_t x, uint8_t y, uint8_t z, uint8_
 	this->vertices.insert(vertices.end(), vertsV.begin(), vertsV.end());
 }
 
-void Game::GFX::ChunkMesh::generateMesh()
+void Game::GFX::ChunkMesh::uploadToGPU()
 {
 	Game::GFX::ChunkVertex* verts = this->vertices.data();
 	mesh.addBufferData(verts, this->vertices.size() * sizeof(Game::GFX::ChunkVertex), GL_DYNAMIC_DRAW);
+}
+
+void Game::GFX::ChunkMesh::clear()
+{
+	this->vertices.clear();
 }
 
 Game::GFX::ChunkMesh::ChunkMesh(Engine::GFX::TextureArray& texture, Engine::GFX::VBO* vbo) :

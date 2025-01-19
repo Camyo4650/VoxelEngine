@@ -16,6 +16,8 @@ Engine::GameEngine::GameEngine(int w, int h) :
 		{1, GL_INT,		GL_FALSE, sizeof(Game::GFX::AxisVertex), (void*)(3 * sizeof(float))}
 	}, new Engine::GFX::VBO())*/
 {
+	lastTime = SDL_GetTicks();
+	frameCount = 0;
 	world.load();
 }
 
@@ -48,9 +50,20 @@ void Engine::GameEngine::update(double delta)
 
 void Engine::GameEngine::render()
 {
+	Uint32 currentTime = SDL_GetTicks();
 	glCall(glClearColor(0.1f, 0.5f, 0.6f, 1.0f));
 	glCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	world.render();
+	Uint32 newTime = SDL_GetTicks();
+	if (currentTime >= lastTime + 1000)
+	{
+		printf("\r\033[KFPS:\t%6.1f", (float)frameCount / ((currentTime - (float)lastTime) / 1000)); // Use \r to overwrite the current line
+		fflush(stdout);
+		lastTime = currentTime;
+		frameCount = 0;
+		printf("\t\tRendered in %9.d", newTime - lastTime);
+	}
+	frameCount++;
 }
 
 Engine::GameEngine::~GameEngine()
